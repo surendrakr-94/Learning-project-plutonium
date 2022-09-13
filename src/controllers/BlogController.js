@@ -8,38 +8,28 @@ const { AuthorisationDeleteQuery } = require("../middleware/midd")
 const isValid = function (check) {
     if (!check || check == undefined) { return false }
     if (typeof check !== "string" || check.trim().length == 0) { return false }
+
     return true
 }
  
-const isvalidateBody = function(body)
-{
-    return Object.keys(req).length>0
-}
 
-const isvalidObjectId = function(objectId)
-{
-return mongoose.Types.ObjectId.isValid(objectId)
-}
 
 const createBlog = async function (req, res) {
     try {
         let data = req.body
         
-        if(isvalidateBody(data))
-        {
-            res.status(400).send({status:false,message:"Invalid parameters"})
-        }
+
         const {title,body,authorId,tags,category,subCategory,isPublished} = data
 
-        if (!isValidauthorId) {
-            const check = await authormodel.find(data.author_id)
+        if (authorId) {
+            const check = await authormodel.findById(authorId)
             if (check) {
 
               if (!isValid(title)) { return res.status(400).send({ status: false, msg: "title is required" }) }
                 
               if (!isValid(body)) { return res.status(400).send({ status: false, msg: "body is required" }) }
                            
-              if (!isValidObjectId(authorId)) { return res.status(400).send({ status: false, msg: "authorId is not valid" }) }
+              if (!isValid(authorId)) { return res.status(400).send({ status: false, msg: "authorId is not valid" }) }
                
               if (!isValid(category)) { return res.status(400).send({ status: false, msg: "category is required" }) }
                
@@ -87,10 +77,10 @@ const getBlogsData = async function (req, res) {
 const updateBlog = async function(req, res) 
  {
     try {
-        const { tags, category, title, body, subCategory,isPublished } = req.body
+        const { tags, category, title, body, subCategory} = req.body
         const blogId = req.params.blogId
-        const params =req.params
-        const authorid = req.authorId
+        
+       // const authorid = req.authorId
 
 
         if (blogId.length < 24 && blogId.length > 24) { return res.status(404).send({ status: false, msg: "plz enter correct blogId" }) }
@@ -103,14 +93,6 @@ const updateBlog = async function(req, res)
             return res.status(400).send({ status: false, msg: "blogId is incorrect" })
         }
        
-        if (!isValid(title)) { return res.status(400).send({ status: false, msg: "title is required" }) }
-                
-        if (!isValid(body)) { return res.status(400).send({ status: false, msg: "body is required" }) }              
-     
-        if (!isValid(category)) { return res.status(400).send({ status: false, msg: "category is required" }) }
-        
-        if (!isValid(subcategory)) { return res.status(400).send({ status: false, msg: "category is required" }) }
-      
         
 
         let changeBlog = await blogModel.findByIdAndUpdate({ _id: blogId }, { $addToSet: { tags: tags, subCategory: subCategory }, $set: { title: title, body: body, category: category, isPublished: true, publishedAt: Date.now() } }, { new: true })
@@ -166,7 +148,7 @@ const deleteBlogsquery = async function (req, res) {
 
        else {  
            let blog = await blogModel.find({$or:[{authorId,category,subCategory,tags,isPublished}]})  
-           let updateData = await blogModel.updateMany(blog, { $set: { isDeleted: true ,deletedAt:Date.now(),isPublished:false,publishedAt:null} },{new:true})
+           let updateData = await blogModel.findByIdAndUpdate(blog, { $set: { isDeleted: true ,deletedAt:Date.now(),isPublished:false,publishedAt:null} },{new:true})
 
            res.status(201).send({ status: true, msg: updateData })
        }

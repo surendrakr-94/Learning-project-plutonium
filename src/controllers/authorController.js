@@ -9,11 +9,11 @@ const isValid = function (check)
     return true
 }
 
-const isValidTitle = function(title)
-    {
-         ['Mr','Mrs','Miss'].indexOf(title)!==-1
-         return title
-    }
+//const isValidTitle = function(title)
+ //   {
+  //       ['Mr','Mrs','Miss'].indexOf(title)!==-1
+   //      return title
+   // }
 
 //const isvalidateBody = function(body)
  //   {
@@ -37,7 +37,7 @@ const createAuthor = async function (req, res) {
         
         if (!isValid(title)) { return res.status(400).send({ status: false, msg: "title is required" }) }
           
-        if(isValidTitle(title)){ return res.status(400).send({ status: false, msg: "title should be Mr,Mrs,Miss"}) }
+       // if(isValidTitle(title)){ return res.status(400).send({ status: false, msg: "title should be Mr,Mrs,Miss"}) }
 
 
         if (!isValid(email)) { return res.status(400).send({ status: false, msg: "email is required" }) }
