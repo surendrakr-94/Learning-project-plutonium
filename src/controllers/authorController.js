@@ -9,18 +9,6 @@ const isValid = function (check)
     return true
 }
 
-//const isValidTitle = function(title)
- //   {
-  //       ['Mr','Mrs','Miss'].indexOf(title)!==-1
-   //      return title
-   // }
-
-//const isvalidateBody = function(body)
- //   {
-
-       // return Object.keys(body).length>0
- //   }
-
 const createAuthor = async function (req, res) {
     try {
         data = req.body
@@ -36,9 +24,9 @@ const createAuthor = async function (req, res) {
         if (!isValid(lName)) { return res.status(400).send({ status: false, msg: "lName is required" }) }
         
         if (!isValid(title)) { return res.status(400).send({ status: false, msg: "title is required" }) }
-          
-       // if(isValidTitle(title)){ return res.status(400).send({ status: false, msg: "title should be Mr,Mrs,Miss"}) }
-
+       
+        let title1 = /^(Mr|Mrs|Miss){0,3}$/.test(title.trim())
+        if (!title1) return res.status(400).send({ stats: false, msg: "title should be Mr,Mrs,Misse" })
 
         if (!isValid(email)) { return res.status(400).send({ status: false, msg: "email is required" }) }
         let Email = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email.trim())
@@ -88,7 +76,9 @@ const login = async function (req, res) {
         console.log(token)
         res.header({ "x-api-key": token })
         res.status(200).send({ status: true, msg:"Login Successfull", data: token })
-    } catch (err) {
+    } 
+    
+    catch (err) {
         console.log(err.message);
         res.status(500).send({ error: err.message });
     }

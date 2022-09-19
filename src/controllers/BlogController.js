@@ -134,24 +134,22 @@ const deleteBlogsquery = async function (req, res) {
     try {
 
        let data = req.query
+             
        const { authorId,category,subCategory,tags,isPublished }= data
        if (Object.keys(data).length == 0) 
        return res.status(400).send({ status: false, message: "Enter a valid input in body" });
-
-
-       let saveData = await blogModel.findOne(data)
-        console.log(saveData)
-
+           
       
-       if (saveData.isDeleted == true)
-        { return res.send({ msg: "data is already delete" }) }
+        let deletedData = await blogModel.findOneAndUpdate({ $or: [{ authorId: authorId }, { category: category }, { tags: tags }, { subcategory: subCategory },{ isPublished: isPublished }] }, { isDeleted: true }, { new: true })
+        if (!deletedData) {
+            return res.status(404).send("No such blog exists")
+       
+            }
 
-       else {  
-           let blog = await blogModel.find({$or:[{authorId,category,subCategory,tags,isPublished}]})  
-           let updateData = await blogModel.findByIdAndUpdate(blog, { $set: { isDeleted: true ,deletedAt:Date.now(),isPublished:false,publishedAt:null} },{new:true})
-
-           res.status(201).send({ status: true, msg: updateData })
-       }
+            else {
+                deletedData.deletedAt=Date.now()
+                res.status(200).send({ status: true, msg: "Blog Successfull Deleted",deletedAt:deletedData.deletedAt })
+            }    
    }
    catch (err) {
        res.status(500).send({ error: err.message })
